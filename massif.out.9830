@@ -1,0 +1,46 @@
+desc: (none)
+cmd: ./main-val.out 0 0 set 10000 FOR dup 0 get + 0 set ; 0 get . ;
+time_unit: i
+#-----------
+snapshot=0
+#-----------
+time=0
+mem_heap_B=0
+mem_heap_extra_B=0
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=1
+#-----------
+time=165323
+mem_heap_B=1024
+mem_heap_extra_B=8
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=2
+#-----------
+time=16307145
+mem_heap_B=1024
+mem_heap_extra_B=8
+mem_stacks_B=0
+heap_tree=peak
+n1: 1024 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 1024 0x48E8D9B: _IO_file_doallocate (filedoalloc.c:101)
+  n1: 1024 0x48F676F: _IO_doallocbuf (genops.c:347)
+   n1: 1024 0x48F676F: _IO_doallocbuf (genops.c:342)
+    n1: 1024 0x48F5B17: _IO_file_overflow@@GLIBC_2.2.5 (fileops.c:744)
+     n1: 1024 0x48F4C3D: _IO_new_file_xsputn (fileops.c:1243)
+      n1: 1024 0x48F4C3D: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1196)
+       n1: 1024 0x48D1D68: outstring_func (vfprintf-internal.c:239)
+        n1: 1024 0x48D1D68: __vfprintf_internal (vfprintf-internal.c:767)
+         n1: 1024 0x48C7F0A: printf (printf.c:33)
+          n0: 1024 0x1098C9: main (main.c:110)
+#-----------
+snapshot=3
+#-----------
+time=16307145
+mem_heap_B=0
+mem_heap_extra_B=0
+mem_stacks_B=0
+heap_tree=empty
