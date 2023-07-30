@@ -1,11 +1,11 @@
 #! /bin/sh
 #
 echo "Compiling..."
-gcc -lm -fsanitize=address -o main.out main.c
-gcc -lm -g -o main-val.out main.c || exit 1
+gcc -lm -fsanitize=address -Isrc -o main.out src/main.c
+gcc -lm -g -Isrc -o main-val.out src/main.c || exit 1
 
 echo "C test"
-gcc -O0 -o test.out test.c
+gcc -O0 -Isrc -o test.out tests/test.c
 ./test.out
 
 ./main.out '( PRINT test ) 15 h. ." vs 0xF, " 7 dup . b. ." vs 0b0111 " ;'
