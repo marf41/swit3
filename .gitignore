@@ -1,3 +1,8 @@
 *.out
 .vscode
 *.out.*
+massif.*
+massif.*.*
+*.d
+*.o
+main

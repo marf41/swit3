@@ -1,20 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <errno.h>
-#include <fcntl.h>
+#include "web.h"
 
-#define MAX_SERVERS 5
-#define MAX_CLIENTS 10
-#define BUFFER_SIZE 1024
-
-int server_fd[MAX_SERVERS], new_socket, activity, i, valread, sd;
-int client_sockets[MAX_SERVERS][MAX_CLIENTS] = {0};
-
-typedef int16_t (RequestParser)(char* req, uint16_t reqlen, char* resp, uint16_t maxlen);
+int server_fd[MAX_SERVERS]; //, activity;
+int client_sockets[MAX_SERVERS][MAX_CLIENTS];
 
 int8_t web_setup(uint8_t sn, uint16_t port) {
     if (port <= 0) { return -1; }
@@ -57,18 +44,21 @@ void web_header(char* resp, uint16_t maxlen, char* s, uint16_t len) {
     snprintf(resp, maxlen, "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: %d\n\n%s", len, s);
 }
 
-int16_t web_hello(char* req, uint16_t reqlen, char* resp, uint16_t maxlen) {
+int16_t web_hello(struct Interpreter* ci, struct Request req, char* resp) {
+    UNUSED(ci);
     // snprintf(resp, maxlen, "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello, World!");
-    web_header(resp, maxlen, "Hello, World!", 13);
+    const char s[] = "Hello, World!\0";
+    web_header(resp, req.max, (char*)s, 13);
     return -strlen(resp);
 }
 
-int8_t web_loop(uint8_t sn, RequestParser* parse) {
+int8_t web_loop(struct Interpreter* ci, uint8_t sn, RequestParser* parse) {
     int8_t reqs = 0;
-    fd_set readfds;
+    // fd_set readfds;
     char buffer[BUFFER_SIZE] = { 0 };
     char response[BUFFER_SIZE] = { 0 };
-    
+    int new_socket, valread, sd, i;
+
     if ((new_socket = accept(server_fd[sn], NULL, NULL)) >= 0) {
         if (fcntl(new_socket, F_SETFL, O_NONBLOCK) < 0) {
             perror("Failed to set client socket as nonblocking");
@@ -85,14 +75,18 @@ int8_t web_loop(uint8_t sn, RequestParser* parse) {
         if (sd > 0) {
             valread = read(sd, buffer, BUFFER_SIZE);
             if (valread > 0) {
-                int16_t len = parse(buffer, valread, response, BUFFER_SIZE);
+                struct Request req = { 0 };
+                req.req = buffer;
+                req.len = valread;
+                req.max = BUFFER_SIZE;
+                int16_t len = parse(ci, req, response);
                 // if (len < 0) { printf("Response %d: %s\n", len, response); }
                 if (len == 0) { return len; }
                 reqs++;
                 uint16_t sent = 0;
                 uint16_t alen = (len < 0) ? (-len) : len;
                 while (sent < alen) {
-                    uint16_t s = send(sd, response + sent, alen - sent, 0);
+                    int16_t s = send(sd, response + sent, alen - sent, 0);
                     if (s < 0) { close(sd); perror("Send error"); break; }
                     sent += s;
                 }

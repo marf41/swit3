@@ -6,13 +6,15 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "web.c"
+#include "types.h"
+#include "web.h"
 
 int main() {
     web_setup(1, 8080);
     printf("START\n");
+    struct Interpreter ci;
     while(1) {
-        web_loop(1, web_hello);
+        web_loop(&ci, 1, web_hello);
         printf(".");
     }
 }

@@ -1,7 +1,5 @@
-#ifndef SWIT3_MAIN_H
-#define SWIT3_MAIN_H
-
-#define MEM_SIZE 1000
+#ifndef SWIT3_INT_H
+#define SWIT3_INT_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -9,9 +7,9 @@
 #include <time.h>
 #include <math.h>
 #include <unistd.h>
+#include <stdbool.h>
 
-#define MODBUS
-#define WEB
+#include "types.h"
 
 #ifdef MODBUS
 #include <stdio.h>
@@ -22,6 +20,8 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
+
+#include "web.h"
 #endif
 
 #ifdef WEB
@@ -33,9 +33,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
-#endif
 
-typedef int16_t stack_int;
+#include "web.h"
+#endif
 
 #define WSP(c) (((c-1) >> 5) == 0)
 #define PRS2(c) ((((c | 32)) - 32))
@@ -86,5 +86,7 @@ typedef int16_t stack_int;
     (((i) & 0x04ll) ? '1' : '0'), \
     (((i) & 0x02ll) ? '1' : '0'), \
     (((i) & 0x01ll) ? '1' : '0')
+
+int8_t interpret(struct Interpreter *ci);
 
 #endif

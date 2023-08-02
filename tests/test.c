@@ -1,4 +1,4 @@
-#include "main.h"
+#include "int.h"
 
 int main() {
     SAVE_START_TIME();

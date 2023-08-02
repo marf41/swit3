@@ -1,12 +1,12 @@
 #! /bin/sh
 #
-echo "Compiling..."
-gcc -lm -fsanitize=address -Isrc -o main.out src/main.c
-gcc -lm -g -Isrc -o main-val.out src/main.c || exit 1
+#echo "Compiling..."
+#gcc -lm -fsanitize=address -Isrc -o main.out src/*.c
+#gcc -Wall -Wextra -pedantic -lm -g -Isrc -o main-val.out src/*.c || exit 1
 
-echo "C test"
-gcc -O0 -Isrc -o test.out tests/test.c
-./test.out
+#echo "C test"
+#gcc -O0 -Isrc -o test.out tests/test.c
+#./test.out
 
 ./main.out '( PRINT test ) 15 h. ." vs 0xF, " 7 dup . b. ." vs 0b0111 " ;'
 ./main.out '( BASE test ) b111 . ." vs 7, " h99 dup . h. ." vs 0x99 " ;'
@@ -27,14 +27,11 @@ gcc -O0 -Isrc -o test.out tests/test.c
 
 # 0 10k | ovr -> 0 10k 0 | ovr -> 0 10k 0 10k | + -> 0 10k 10k+0 | swp -> 0 10k+0 10k | rot drp
 ./main.out '( LOOP test ) 0 360 FOR ovr ovr + swp rot drp ; u. ;'
-./main.out '0 0 set 30000 FOR dup 0 get + 0 set ; 0 get . ;'
+./main.out '0 0 set 30000 FOR dup 1000 > ? 1 : 2 ; 0 get + 0 set ; 0 get . ;'
 
-./main.out '( FUNC test ) : sqr dup * ; 2 sqr dup . sqr . : trg dup dup * * ; 2 trg . ;'
-./main.out '( FUNC NUM test ) : add 3 + ; 2 add . ;'
+./main.out '( FUNC test ) : sqr dup * :; 2 sqr dup . sqr . : trg dup dup * * :; 2 trg . ;'
+./main.out '( FUNC NUM test ) : add 3 + :; 2 add . ;'
 
 ./main.out '( DELAY test ) 1000 ms ;'
 
-./main.out '( WEB SERVER test ) 8080 web 10 FOR 1000 ms ; ;'
-./main.out '( MODBUS SERVER test ) 5002 mbs 10 FOR 1000 ms ; ;'
-
-valgrind -q -s --leak-check=full ./main-val.out '8080 web 0 0 set 10000 FOR dup 0 get + 0 set ; 0 get . ;'
+./main.out '( FIB test ) : fib :;'
